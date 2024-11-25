@@ -6,17 +6,14 @@ async function main() {
   const signer = signers[0];
 
   await hre.mbDeployer.setup();
-  const numberOfOptions = 5
 
-  const simpleVoting = await hre.mbDeployer.deploy(signer as SignerWithAddress, 'SimpleVoting', [numberOfOptions], {
-    addressLabel: 'simple_voting',
-    contractVersion: '1.0',
-    contractLabel: 'simple_voting',
+  const curios = await hre.mbDeployer.deploy(signer as SignerWithAddress, 'Curios', [signer.address], {
+    addressLabel: 'curios_v1',
+    contractVersion: '1.1',
+    contractLabel: 'curios',
   });
 
-  console.log(
-    `SimpleVoting with ${numberOfOptions} options deployed to ${simpleVoting.contract.target}`,
-  );
+  console.log(`Curios deployed to ${curios.contract.target}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

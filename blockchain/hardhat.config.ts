@@ -4,35 +4,28 @@ import 'hardhat-multibaas-plugin';
 import path from 'path';
 
 let deployerPrivateKey = '0x0000000000000000000000000000000000000000000000000000000000000000';
-let deploymentEndpoint, ethChainID, web3Key, adminApiKey, rpcUrl = '';
+let deploymentEndpoint, ethChainID, adminApiKey, rpcUrl = '';
 
 if (process.env.HARDHAT_NETWORK) {
-  const CONFIG_FILE = path.join(__dirname, `./deployment-config.${process.env.HARDHAT_NETWORK}`);
+  const CONFIG_FILE = path.join(__dirname, `./deployment-config.development.js`);
   ({
-    deploymentConfig: { deploymentEndpoint, ethChainID, deployerPrivateKey, web3Key, adminApiKey, rpcUrl },
+    deploymentConfig: { deploymentEndpoint, ethChainID, deployerPrivateKey, adminApiKey, rpcUrl },
   } = require(CONFIG_FILE));
 }
-
-const web3Url = web3Key ?`${deploymentEndpoint}/web3/${web3Key}` : rpcUrl;
 
 const config: HardhatUserConfig = {
   networks: {
     development: {
-      url: web3Url,
+      url: rpcUrl,
       chainId: ethChainID,
       accounts: [deployerPrivateKey],
-    },
-    testing: {
-      url: web3Url,
-      chainId: ethChainID,
-      accounts: [deployerPrivateKey],
-    },
+    }
   },
   mbConfig: {
     apiKey: adminApiKey,
     host: deploymentEndpoint,
-    allowUpdateAddress: ['development', 'testing'],
-    allowUpdateContract: ['development'],
+    allowUpdateAddress: ['base_sepolia'],
+    allowUpdateContract: ['base_sepolia'],
   },
   solidity: {
     compilers: [
