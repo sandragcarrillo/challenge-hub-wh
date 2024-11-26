@@ -27,6 +27,24 @@ const config: HardhatUserConfig = {
     allowUpdateAddress: ['base_sepolia'],
     allowUpdateContract: ['base_sepolia'],
   },
+  etherscan: {
+    apiKey: {
+      base_sepolia: "bf159293-ad1b-4032-a232-1832be40f668"
+    },
+    customChains: [
+      {
+        network: "base_sepolia",
+        chainId: 84532,
+        urls: {
+          apiURL: "https://api-sepolia.basescan.org/api",
+          browserURL: "https://sepolia.basescan.org"
+        }
+      }
+    ]
+  },
+  sourcify: {
+    enabled: true
+  },
   solidity: {
     compilers: [
       {

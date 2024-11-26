@@ -1,0 +1,47 @@
+type OwnershipTransferred @entity(immutable: true) {
+  id: Bytes!
+  previousOwner: Bytes! # address
+  newOwner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type QuestCompleted @entity(immutable: true) {
+  id: Bytes!
+  _tokenAddress: Bytes! # address
+  _questIndex: BigInt! # uint256
+  _winner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type QuestCreated @entity(immutable: true) {
+  id: Bytes!
+  _tokenAddress: Bytes! # address
+  _questIndex: BigInt! # uint256
+  questType: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type QuestInvalidated @entity(immutable: true) {
+  id: Bytes!
+  _tokenAddress: Bytes! # address
+  _questIndex: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RewardClaimed @entity(immutable: true) {
+  id: Bytes!
+  _tokenAddress: Bytes! # address
+  _questIndex: BigInt! # uint256
+  _claimer: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

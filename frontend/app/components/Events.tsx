@@ -1,5 +1,4 @@
 "use client";
-import type { UseWaitForTransactionReceiptReturnType } from "wagmi";
 import React, { useEffect, useState, useCallback } from "react";
 import useMultiBaas from "../hooks/useMultiBaas";
 
@@ -20,77 +19,64 @@ interface EventData {
   };
 }
 
-interface EventsProps {
-  txReceipt: UseWaitForTransactionReceiptReturnType['data'] | undefined;
-}
-
-const Events: React.FC<EventsProps> = ({ txReceipt }) => {
-  const { getVotedEvents } = useMultiBaas();
-  const [events, setEvents] = useState<EventData[]>([]);
+const AllChallenges: React.FC = () => {
+  const { getChallengeCreatedEvents } = useMultiBaas(); // Asegúrate de definir esto en useMultiBaas
+  const [challenges, setChallenges] = useState<EventData[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Wrap fetchEvents with useCallback
-  const fetchEvents = useCallback(async () => {
+  // Fetch challenge creation events
+  const fetchChallenges = useCallback(async () => {
     setIsFetching(true);
+    setError(null);
     try {
-      const fetchedEvents = await getVotedEvents();
+      // Llama al método del hook para obtener los eventos QuestCreated
+      const fetchedEvents = await getChallengeCreatedEvents();
       if (fetchedEvents) {
-        setEvents(fetchedEvents);
+        setChallenges(fetchedEvents);
       }
-    } catch (error) {
-      console.error("Error fetching events:", error);
+    } catch (err) {
+      console.error("Error fetching challenges:", err);
+      setError("Failed to fetch challenges. Please try again later.");
     } finally {
       setIsFetching(false);
     }
-  }, [getVotedEvents]);
+  }, [getChallengeCreatedEvents]);
 
-  // Fetch events on component mount
   useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  // Fetch events whenever txReceipt changes
-  useEffect(() => {
-    if (txReceipt) {
-      fetchEvents();
-    }
-  }, [txReceipt, fetchEvents]);
+    fetchChallenges();
+  }, [fetchChallenges]);
 
   return (
-    <div className="container">
-      <h1 className="title">Recent Events</h1>
-      <div className="spinner-parent">
-        {isFetching && (
-          <div className="overlay">
-            <div className="spinner"></div>
-          </div>
-        )}
-        {!isFetching && events.length === 0 ? (
-          <p>No events found.</p>
-        ) : (
-          <ul className="events-list">
-            {events.map((event, index) => (
-              <li key={index} className="event-item">
-                <div className="event-name">
-                  <strong>{event.event.name}</strong> - {event.triggeredAt}
-                </div>
-                <div className="event-details">
-                  {event.event.inputs.map((input, idx) => (
-                    <p key={idx}>
-                      <strong>{input.name}:</strong> {input.value}
-                    </p>
-                  ))}
-                  <p>
-                    <strong>Transaction Hash:</strong> {event.transaction.txHash}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">All Challenges</h1>
+
+      {isFetching ? (
+        <p>Loading challenges...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : challenges.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {challenges.map((challenge, index) => (
+            <div key={index} className="border rounded-lg p-4">
+              <h2 className="font-bold text-lg">{challenge.event.name}</h2>
+              <p><strong>Triggered At:</strong> {challenge.triggeredAt}</p>
+              {challenge.event.inputs.map((input, idx) => (
+                <p key={idx}>
+                  <strong>{input.name}:</strong> {input.value}
+                </p>
+              ))}
+              <p>
+                <strong>Transaction Hash:</strong> {challenge.transaction.txHash}
+              </p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p>No challenges found.</p>
+      )}
     </div>
   );
 };
 
-export default Events;
+export default AllChallenges;

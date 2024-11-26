@@ -1,0 +1,38 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Curios
+    network: base-sepolia
+    source:
+      address: "0xB6Da7d8996b4510f95fA6704AC7ACAB69CFd51a9"
+      abi: Curios
+      startBlock: 18366099
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - OwnershipTransferred
+        - QuestCompleted
+        - QuestCreated
+        - QuestInvalidated
+        - RewardClaimed
+      abis:
+        - name: Curios
+          file: ./abis/Curios.json
+      eventHandlers:
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: QuestCompleted(indexed address,indexed uint256,indexed address)
+          handler: handleQuestCompleted
+        - event: QuestCreated(indexed address,indexed uint256,uint8)
+          handler: handleQuestCreated
+        - event: QuestInvalidated(indexed address,indexed uint256)
+          handler: handleQuestInvalidated
+        - event: RewardClaimed(indexed address,indexed uint256,indexed address)
+          handler: handleRewardClaimed
+      file: ./src/curios.ts
