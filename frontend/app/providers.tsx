@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-
+import { ApolloProvider } from "@apollo/client";
+import client from "@/lib/apollo-client";
 import {
   getDefaultConfig,
   RainbowKitProvider,
@@ -37,6 +38,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
   return (
+    <ApolloProvider client={client}>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
@@ -44,5 +46,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
+    </ApolloProvider>
   );
 }

@@ -17,8 +17,8 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - OwnershipTransferred
-        - QuestCompleted
         - QuestCreated
+        - QuestCompleted
         - QuestInvalidated
         - RewardClaimed
       abis:
@@ -27,10 +27,10 @@ dataSources:
       eventHandlers:
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
-        - event: QuestCompleted(indexed address,indexed uint256,indexed address)
-          handler: handleQuestCompleted
         - event: QuestCreated(indexed address,indexed uint256,uint8)
           handler: handleQuestCreated
+        - event: QuestCompleted(indexed address,indexed uint256,indexed address)
+          handler: handleQuestCompleted
         - event: QuestInvalidated(indexed address,indexed uint256)
           handler: handleQuestInvalidated
         - event: RewardClaimed(indexed address,indexed uint256,indexed address)

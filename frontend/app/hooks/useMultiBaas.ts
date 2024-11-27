@@ -1,116 +1,98 @@
 "use client";
-import { useCallback, useMemo } from "react";
-import { Configuration, ContractsApi, EventsApi } from "@curvegrid/multibaas-sdk";
+import { useMemo, useCallback } from "react";
+import { Configuration, ContractsApi, EventsApi, ChainsApi } from "@curvegrid/multibaas-sdk";
+import { useAccount } from "wagmi";
 
-const useMultiBaas = () => {
+interface MultiBaasHook {
+  createQuest: (params: CreateQuestParams) => Promise<void>;
+  getChainStatus: () => Promise<ChainStatus | null>;
+}
+
+interface CreateQuestParams {
+  name: string;
+  hint: string;
+  maxWinners: number;
+  rewardAmount: number;
+  metadata: string; // JSON stringified metadata
+  answers: string[]; // List of correct answers to generate Merkle Tree
+}
+
+interface ChainStatus {
+  chainID: number;
+  blockNumber: number;
+}
+
+const useMultiBaas = (): MultiBaasHook => {
   const mbBaseUrl = process.env.NEXT_PUBLIC_MULTIBAAS_DEPLOYMENT_URL || "";
   const mbApiKey = process.env.NEXT_PUBLIC_MULTIBAAS_DAPP_USER_API_KEY || "";
-  const curiosContractLabel = process.env.NEXT_PUBLIC_MULTIBAAS_CURIOS_CONTRACT_LABEL || "";
-  const curiosAddressLabel = process.env.NEXT_PUBLIC_MULTIBAAS_CURIOS_ADDRESS_LABEL || "";
-  const chain = "ethereum";
+  const contractLabel = process.env.NEXT_PUBLIC_MULTIBAAS_CONTRACT_LABEL || "";
+  const chain = "base sepolia"; // Ensure this is correct for your deployment
 
   const mbConfig = useMemo(() => {
     return new Configuration({
-      basePath: new URL("/api/v0", mbBaseUrl).toString(),
+      basePath: `${mbBaseUrl}/api/v0`,
       accessToken: mbApiKey,
     });
   }, [mbBaseUrl, mbApiKey]);
 
   const contractsApi = useMemo(() => new ContractsApi(mbConfig), [mbConfig]);
-  const eventsApi = useMemo(() => new EventsApi(mbConfig), [mbConfig]);
+  const chainsApi = useMemo(() => new ChainsApi(mbConfig), [mbConfig]);
 
-  const callContractFunction = useCallback(
-    async (methodName: string, args: any[] = []) => {
-      try {
-        const response = await contractsApi.callContractFunction(
-          chain,
-          curiosAddressLabel,
-          curiosContractLabel,
-          methodName,
-          { args }
-        );
-        return response.data.result.kind === "MethodCallResponse"
-          ? response.data.result.output
-          : response.data.result.tx;
-      } catch (err) {
-        console.error(`Error calling ${methodName}:`, err);
-        throw err;
-      }
-    },
-    [contractsApi, chain, curiosAddressLabel, curiosContractLabel]
-  );
+  const { address } = useAccount();
 
-  const createQuest = useCallback(
-    async (params: any) => {
-      return await callContractFunction("createQuest", [
-        params.tokenAddress,
-        params.name,
-        params.hint,
-        params.maxWinners,
-        params.merkleRoot,
-        params.merkleBody,
-        params.metadata,
-        params.questType,
-        params.requiredScore,
-        params.rewardAmount,
-      ]);
-    },
-    [callContractFunction]
-  );
-
-  const getAllEvents = useCallback(async (): Promise<any[] | null> => {
+  const getChainStatus = useCallback(async (): Promise<ChainStatus | null> => {
     try {
-      const response = await eventsApi.listEvents(
-        undefined, // Start time (opcional)
-        undefined, // End time (opcional)
-        undefined, // Limit (omitir para traer todos)
-        undefined, // Offset
-        undefined, // Reverse
-        false,     // Fetch only final state events
-        chain,     // Blockchain configurada
-        undefined, // Sin filtrar por contract_address
-        undefined  // Sin filtrar por contract_label
-      );
-      console.log("Fetched all raw events:", response.data.result);
-      return response.data.result;
-    } catch (err) {
-      console.error("Error fetching all raw events:", err.response?.data || err.message);
+      const response = await chainsApi.getChainStatus(chain);
+      return response.data.result as ChainStatus;
+    } catch (error) {
+      console.error("Error fetching chain status:", error);
       return null;
     }
-  }, [eventsApi, chain]);
+  }, [chainsApi, chain]);
 
-  const getQuests = useCallback(async (tokenAddress: string) => {
+  const createQuest = useCallback(async (params: CreateQuestParams): Promise<void> => {
+    const { name, hint, maxWinners, rewardAmount, metadata, answers } = params;
+
+    // Generate Merkle Tree
+    const keccak256 = require("keccak256");
+    const { MerkleTree } = require("merkletreejs");
+    const leafNodes = answers.map((answer) => keccak256(answer));
+    const merkleTree = new MerkleTree(leafNodes, keccak256, { sortPairs: true });
+    const merkleRoot = `0x${merkleTree.getRoot().toString("hex")}`;
+    const merkleBody = JSON.stringify(leafNodes.map((node) => `0x${node.toString("hex")}`));
+
     try {
-      const response = await callContractFunction("getQuests", [tokenAddress]);
-      return response || [];
-    } catch (err) {
-      console.error("Error fetching quests:", err);
-      return [];
-    }
-  }, [callContractFunction]);
+      if (!address) throw new Error("Wallet not connected");
 
+      // Payload for MultiBaas
+      const payload = {
+        args: [
+          address,       // _tokenAddress
+          name,          // _name
+          hint,          // _hint
+          maxWinners,    // _maxWinners
+          merkleRoot,    // _merkleRoot
+          merkleBody,    // _merkleBody
+          metadata,      // _metadata
+          0,             // _questType (0 for Quiz)
+          0,             // _requiredScore
+          rewardAmount,  // _rewardAmount
+        ],
+        from: address,
+      };
 
-  const getQuestCreatedEvents = useCallback(async (): Promise<any[]> => {
-    try {
-      const eventQueryName = "QuestCreated";
-  
-      const response = await eventsApi.runEventQuery(eventQueryName);
-      console.log("Fetched QuestCreated events:", response.data.result);
-  
-      return response.data.result; // Devuelve los resultados de la consulta
-    } catch (err) {
-      console.error("Error fetching QuestCreated events via Event Query:", err.response?.data || err.message);
-      return [];
+      await contractsApi.callContractFunction(chain, address, contractLabel, "createQuest", payload);
+
+      console.log("Quest created successfully!");
+    } catch (error) {
+      console.error("Error creating quest:", error);
+      throw new Error("Failed to create quest.");
     }
-  }, [eventsApi]);
-  
-  
+  }, [contractsApi, address, chain, contractLabel]);
 
   return {
     createQuest,
-    getQuests,
-    getAllEvents, 
-    getQuestCreatedEvents
+    getChainStatus,
   };
 };
 
