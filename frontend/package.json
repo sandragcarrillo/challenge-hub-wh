@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.11.10",
+    "@codefi/delegator-core-viem": "^0.4.0",
     "@curvegrid/multibaas-sdk": "^1.0.0-beta21",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-label": "^2.1.0",
@@ -24,6 +25,7 @@
     "lucide-react": "^0.461.0",
     "merkletreejs": "^0.4.0",
     "next": "14.2.15",
+    "permissionless": "^0.2.20",
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^2.5.5",

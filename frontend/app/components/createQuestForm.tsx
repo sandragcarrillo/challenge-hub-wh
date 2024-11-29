@@ -18,14 +18,13 @@ const CreateQuestForm = () => {
     name: "",
     hint: "",
     maxWinners: 0,
-    rewardAmount: "", // Input in Ether
+    rewardAmount: "", 
     metadata: "",
-    questType: "Quiz", // "Quiz" or "Game"
+    questType: "Quiz", 
     requiredScore: 0,
-    answers: [""], // List of correct answers
+    answers: [""], 
   });
 
-  // Initialize web3 and load the user's address
   useEffect(() => {
     const loadWeb3 = async () => {
       if (window.ethereum) {
@@ -68,7 +67,7 @@ const CreateQuestForm = () => {
     setFormData((prev) => ({ ...prev, answers: newAnswers }));
   };
 
-  // Submit the quest creation to the blockchain
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -80,8 +79,15 @@ const CreateQuestForm = () => {
 
       const contract = new web3.eth.Contract(curiosABI.abi as any, contractAddress);
 
-      // Convert rewardAmount from Ether to Wei
+      // Convert reward amount to Wei
       const rewardAmountWei = web3.utils.toWei(formData.rewardAmount, "ether");
+      const totalRewardWei = BigInt(rewardAmountWei) * BigInt(formData.maxWinners);
+
+      console.log('Creating quest with:', {
+        rewardPerWinner: formData.rewardAmount + ' ETH',
+        maxWinners: formData.maxWinners,
+        totalReward: web3.utils.fromWei(totalRewardWei.toString(), 'ether') + ' ETH'
+      });
 
       // Generate Merkle Tree
       const leafNodes = formData.answers.map((answer) => keccak256(answer));
@@ -114,7 +120,7 @@ const CreateQuestForm = () => {
         )
         .send({
           from: userAddress,
-          value: rewardAmountWei, // Send Ether as payable
+          value: totalRewardWei.toString(), // Send the total ETH needed for all winners
         });
 
       setSuccess("Quest created successfully!");

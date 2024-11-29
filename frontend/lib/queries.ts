@@ -40,3 +40,15 @@ export const FETCH_TOKEN_ADDRESSES = gql`
     }
   }
 `;
+
+export const FETCH_QUEST_DETAILS = gql`
+  query GetQuestDetails($tokenAddress: String!, $questIndex: Int!) {
+    questCreateds(where: { _tokenAddress: $tokenAddress, _questIndex: $questIndex }) {
+      id
+      _tokenAddress
+      _questIndex
+      questType
+      blockTimestamp
+    }
+  }
+`;

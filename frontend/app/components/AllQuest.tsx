@@ -27,7 +27,6 @@ export default function AllQuests({ contractAddress, onNavigate }: AllQuestsProp
         const web3 = new Web3((window as any).ethereum);
         const contract = new web3.eth.Contract(curiosABI.abi, contractAddress);
 
-        // Obtener direcciones únicas desde el subgraph
         const tokenAddresses = Array.from(new Set(data.questCreateds.map((q: any) => q._tokenAddress)));
 
         console.log("Token Addresses:", tokenAddresses);
@@ -37,7 +36,6 @@ export default function AllQuests({ contractAddress, onNavigate }: AllQuestsProp
           let index = 0;
           while (true) {
             try {
-              // Llamar a la función `quests` del contrato para obtener detalles
               const quest = await contract.methods.quests(address, index).call();
               console.log(`Quest fetched for token ${address} at index ${index}:`, quest);
 
