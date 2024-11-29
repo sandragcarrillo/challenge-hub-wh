@@ -44,13 +44,12 @@ const CreateQuestForm = () => {
     loadWeb3();
   }, []);
 
-  // Handle form input changes
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle adding/removing answers for the Merkle tree
   const addAnswer = () => {
     setFormData((prev) => ({ ...prev, answers: [...prev.answers, ""] }));
   };
@@ -79,7 +78,7 @@ const CreateQuestForm = () => {
 
       const contract = new web3.eth.Contract(curiosABI.abi as any, contractAddress);
 
-      // Convert reward amount to Wei
+
       const rewardAmountWei = web3.utils.toWei(formData.rewardAmount, "ether");
       const totalRewardWei = BigInt(rewardAmountWei) * BigInt(formData.maxWinners);
 
@@ -89,7 +88,7 @@ const CreateQuestForm = () => {
         totalReward: web3.utils.fromWei(totalRewardWei.toString(), 'ether') + ' ETH'
       });
 
-      // Generate Merkle Tree
+  
       const leafNodes = formData.answers.map((answer) => keccak256(answer));
       const merkleTree = new MerkleTree(leafNodes, keccak256, { sortPairs: true });
       const merkleRoot = `0x${merkleTree.getRoot().toString("hex")}`;
@@ -104,7 +103,7 @@ const CreateQuestForm = () => {
         otherDetails: formData.metadata,
       });
 
-      // Call createQuest function
+
       await contract.methods
         .createQuest(
           userAddress,
@@ -120,7 +119,7 @@ const CreateQuestForm = () => {
         )
         .send({
           from: userAddress,
-          value: totalRewardWei.toString(), // Send the total ETH needed for all winners
+          value: totalRewardWei.toString(), 
         });
 
       setSuccess("Quest created successfully!");
@@ -143,8 +142,8 @@ const CreateQuestForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-gray-800 text-white rounded-lg">
-      <h2 className="text-xl font-bold">Create a New Quest</h2>
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-gray-800 text-black rounded-lg">
+      <h2 className="text-xl text-white font-bold">Create a New Quest</h2>
 
       <input
         type="text"
@@ -171,7 +170,7 @@ const CreateQuestForm = () => {
         value={formData.maxWinners}
         onChange={handleInputChange}
         placeholder="Max Winners"
-        className="w-full p-2 border rounded"
+        className="w-full p-2 border rounded text-gray-500"
         required
       />
 
@@ -189,7 +188,7 @@ const CreateQuestForm = () => {
         name="metadata"
         value={formData.metadata}
         onChange={handleInputChange}
-        placeholder="Additional Metadata (JSON)"
+        placeholder="Additional information"
         className="w-full p-2 border rounded"
       ></textarea>
 
@@ -197,9 +196,11 @@ const CreateQuestForm = () => {
         name="questType"
         value={formData.questType}
         onChange={handleInputChange}
-        className="w-full p-2 border rounded"
+        className="w-full p-2 border rounded text-gray-500"
+        placeholder="Quest Type"
         required
       >
+        <option value="" disabled>Select Quest Type</option>
         <option value="Quiz">Quiz</option>
         <option value="Game">Game</option>
       </select>
@@ -217,7 +218,7 @@ const CreateQuestForm = () => {
 
       {formData.questType === "Quiz" && (
         <>
-          <h3 className="text-lg font-bold">Answers</h3>
+          <h3 className="text-lg text-white font-bold">Answers</h3>
           {formData.answers.map((answer, index) => (
             <div key={index} className="flex items-center space-x-2">
               <input

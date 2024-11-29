@@ -28,7 +28,7 @@ export default function Home() {
                   Join a live Challenge
                 </Link>
                 <Link
-                  href="/CreateQuest"
+                  href="/createChallenges"
                   className="inline-flex h-10 items-center justify-center rounded-md bg-white px-8 text-sm font-medium text-[#6c5ce7] shadow transition-colors hover:bg-[#a29bfe] hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                   prefetch={false}
                 >
@@ -74,18 +74,6 @@ export default function Home() {
                 <h3 className="text-xl font-bold">Invite your Community</h3>
                 <p className="text-muted-foreground">
                   Create challenges for your community and motivate them to participate in your activities.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-          <div className="px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Explore Active Challenges</h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Check out some of the amazing challenges that communities have created and join the adventure!
                 </p>
               </div>
             </div>

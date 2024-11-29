@@ -36,8 +36,8 @@ export default function Navbar() {
                 <Link href="/challenges" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
                   Challenges
                 </Link>
-                <Link href="#" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
-                  About
+                <Link href="/createChallenges" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                  Create a challenge
                 </Link>
               </nav>
               <div
@@ -62,8 +62,8 @@ export default function Navbar() {
         <Link href="/challenges" className="text-lg text-white font-medium hover:text-primary transition-colors" prefetch={false}>
           Challenges
         </Link>
-        <Link href="#" className="text-lg text-white font-medium hover:text-primary transition-colors" prefetch={false}>
-          About
+        <Link href="/createChallenges" className="text-lg text-white font-medium hover:text-primary transition-colors" prefetch={false}>
+          Create a challenge
         </Link>
       </nav>
       <div>

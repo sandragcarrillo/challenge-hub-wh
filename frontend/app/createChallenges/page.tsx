@@ -7,7 +7,7 @@ const TransactionStatus: React.FC<{ txReceipt: any }> = ({ txReceipt }) => {
   if (!txReceipt) return null;
 
   return (
-    <div className="transaction-status bg-gray-800 text-white p-4 rounded-lg mt-4">
+    <div className="transaction-status text-black p-4 rounded-lg mt-4">
       <h2 className="text-lg font-bold">Transaction Status</h2>
       <p>
         <strong>Transaction Hash:</strong> {txReceipt.transactionHash}
@@ -35,7 +35,6 @@ const App: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      // Simulating a success callback for quest creation
       const receipt = await new Promise((resolve) =>
         setTimeout(() => resolve({ transactionHash: "0x123...", blockNumber: 12345, from: "0xabc", to: "0xdef" }), 2000)
       );
@@ -48,8 +47,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="app max-w-2xl mx-auto p-6 bg-gray-900 text-white rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">Create a New Quest</h1>
+    <div className="app bg-neutral-900 h-screen text-white p-8">
       <CreateQuest onQuestCreated={handleQuestCreated} />
       {loading && (
         <p className="loading mt-4 text-yellow-400">Submitting transaction...</p>

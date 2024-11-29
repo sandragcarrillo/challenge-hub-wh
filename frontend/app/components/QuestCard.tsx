@@ -17,8 +17,8 @@ export function QuestCard({ category, title, reward, isActive, onClick }: QuestC
     >
       <div className="absolute inset-0 p-4 flex flex-col justify-between z-20">
         <div className="flex justify-between">
-          <span className="bg-indigo-600 px-2 py-1 text-white rounded-full">
-            {category}
+        <span className="bg-indigo-600 text-neutral-200 px-2 py-1 rounded-full">
+            {reward}
           </span>
           <span
             className={`px-2 py-1 rounded-full ${
@@ -29,11 +29,6 @@ export function QuestCard({ category, title, reward, isActive, onClick }: QuestC
           </span>
         </div>
         <h3 className="text-2xl font-bold text-white text-center">{title}</h3>
-        <div className="self-end">
-          <span className="bg-indigo-600 text-neutral-200 px-2 py-1 rounded-full">
-            {reward}
-          </span>
-        </div>
       </div>
     </div>
   );

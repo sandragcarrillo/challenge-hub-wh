@@ -10,9 +10,10 @@ import { QuestCard } from "@/app/components/QuestCard";
 interface AllQuestsProps {
   contractAddress: string;
   onNavigate: (path: string) => void;
+  filterActive?: boolean; 
 }
 
-export default function AllQuests({ contractAddress, onNavigate }: AllQuestsProps) {
+export default function AllQuests({ contractAddress, onNavigate, filterActive }: AllQuestsProps) {
   const [quests, setQuests] = useState<any[]>([]);
   const { data, loading, error } = useQuery(FETCH_TOKEN_ADDRESSES);
 
@@ -54,14 +55,18 @@ export default function AllQuests({ contractAddress, onNavigate }: AllQuestsProp
         }
 
         console.log("Fetched Quests:", allQuests);
-        setQuests(allQuests);
+
+        // Si `filterActive` está activado, filtra solo las quests activas
+        const filteredQuests = filterActive ? allQuests.filter((q) => q.valid) : allQuests;
+
+        setQuests(filteredQuests);
       } catch (err) {
         console.error("Error fetching quests from contract:", err);
       }
     };
 
     fetchQuests();
-  }, [data, contractAddress]);
+  }, [data, contractAddress, filterActive]);
 
   if (loading) return <p>Loading quests...</p>;
   if (error) return <p>Error loading token addresses: {error.message}</p>;
@@ -72,11 +77,11 @@ export default function AllQuests({ contractAddress, onNavigate }: AllQuestsProp
       {quests.map((quest, index) => (
         <QuestCard
           key={index}
-          category={quest.metadata?.category || "Uncategorized"}
           title={quest.name || "Unnamed Quest"}
           reward={quest.rewardAmount ? `${Web3.utils.fromWei(quest.rewardAmount, "ether")} ETH` : "No Reward"}
           isActive={quest.valid}
-          onClick={() => onNavigate(`/challenges/${quest.tokenAddress}-${quest.questIndex}`)}/>
+          onClick={() => onNavigate(`/challenges/${quest.tokenAddress}-${quest.questIndex}`)}
+        />
       ))}
     </div>
   );
