@@ -31,3 +31,45 @@ In this dApp, the delegation was used to submit transactions for quest validatio
 - [Hardhat](https://hardhat.org/)
 - [Multibaas by Curvegrid](https://docs.curvegrid.com/multibaas/)
 - [Metamask Delegation Toolkit](https://docs.gator.metamask.io/get-started/quickstart)
+
+# Getting Started
+To deploy or contribute to Curios Quests, follow these steps:
+
+1. Clone the repository:
+
+```bash
+
+git clone https://github.com/your-repo/curios-quests.git
+cd curios-quests
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up environment variables: Create a .env file with required keys for Multibaas and Metamask Delegation Toolkit.
+
+```bash
+NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID=<YOUR_REOWN_PROJECT_ID
+NEXT_PUBLIC_MULTIBAAS_DEPLOYMENT_URL='https://<DEPLOYMENT_ID>.multibaas.com'
+NEXT_PUBLIC_MULTIBAAS_DAPP_USER_API_KEY='<YOUR_MULTIBAAS_DAPP_USER_API_KEY>'
+NEXT_PUBLIC_MULTIBAAS_WEB3_API_KEY=<YOUR_MULTIBAAS_WEB3_API_KEY>
+NEXT_PUBLIC_MULTIBAAS_VOTING_CONTRACT_LABEL=<YOUR_MULTIBAAS_CONTRACT_LABEL>
+NEXT_PUBLIC_MULTIBAAS_VOTING_ADDRESS_LABEL=<YOUR_MULTIBAAS_ADDRESS_LABEL>
+NEXT_PUBLIC_RPC_URL=<YOUR_RPC_URL>
+NEXT_PUBLIC_PIMLICO_API_KEY=<YOUR_PIMLICO_API_KEY>
+```
+
+4. Start the development server:
+
+```bash
+npm run dev
+```
+
+5. Open the dApp in your browser at:
+
+```bash
+http://localhost:3000
+```
